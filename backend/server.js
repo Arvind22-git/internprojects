@@ -76,6 +76,10 @@ app.get('/api/todos', async (req, res) => {
 app.post('/api/todos', async (req, res) => {
   const { text, userId } = req.body; // Assuming userId is sent from frontend
   try {
+    if (!text) {
+      return res.status(400).json({ message: 'Todo text is required' });
+    }
+
     const newTodo = new Todo({ text, user: userId }); // Assign userId to the user field of Todo
     await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: newTodo });
@@ -89,11 +93,15 @@ app.post('/api/todos', async (req, res) => {
 app.delete('/api/todos/:id', async (req, res) => {
   const { id } = req.params;
   try {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ message: 'Invalid Todo ID' });
+    }
+
     await Todo.findByIdAndDelete(id);
     res.json({ message: 'Todo deleted successfully' });
   } catch (error) {
     console.error('Error deleting todo:', error);
-    res.status(500).json({ message: 'Server Error' });
+    res.status(500).json({ message: 'Failed to delete todo' });
   }
 });
 
@@ -101,8 +109,19 @@ app.delete('/api/todos/:id', async (req, res) => {
 app.put('/api/todos/:id', async (req, res) => {
   const { id } = req.params;
   const { text } = req.body;
+  
+  // Validate if id is a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: 'Invalid Todo ID' });
+  }
+
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(id, { text }, { new: true });
+    const updatedTodo = await Todo.findByIdAndUpdate(id, { text, updatedDate: Date.now() }, { new: true });
+
+    if (!updatedTodo) {
+      return res.status(404).json({ message: 'Todo not found' });
+    }
+
     res.json(updatedTodo);
   } catch (error) {
     console.error('Error updating todo:', error);
