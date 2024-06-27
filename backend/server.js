@@ -97,6 +97,19 @@ app.delete('/api/todos/:id', async (req, res) => {
   }
 });
 
+// Update a todo
+app.put('/api/todos/:id', async (req, res) => {
+  const { id } = req.params;
+  const { text } = req.body;
+  try {
+    const updatedTodo = await Todo.findByIdAndUpdate(id, { text }, { new: true });
+    res.json(updatedTodo);
+  } catch (error) {
+    console.error('Error updating todo:', error);
+    res.status(500).json({ message: 'Failed to update todo' });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);

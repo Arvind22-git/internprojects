@@ -4,19 +4,17 @@ import './Form.css';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
-  const [newTodoText, setNewTodoText] = useState('');
-  const userId = localStorage.getItem('userId'); // Get userId from local storage
+  const [newTodo, setNewTodo] = useState('');
+  const [editingTodoId, setEditingTodoId] = useState(null);
+  const [editingText, setEditingText] = useState('');
 
   useEffect(() => {
-    if (userId) {
-      fetchTodos();
-    } else {
-      console.error('User ID not found');
-    }
-  }, [userId]);
+    fetchTodos();
+  }, []);
 
   const fetchTodos = async () => {
     try {
+      const userId = localStorage.getItem('userId');
       const response = await axios.get(`http://localhost:5000/api/todos?userId=${userId}`);
       setTodos(response.data);
     } catch (error) {
@@ -25,11 +23,11 @@ const TodoList = () => {
   };
 
   const addTodo = async () => {
-    if (!newTodoText) return;
     try {
-      const response = await axios.post('http://localhost:5000/api/todos', { text: newTodoText, userId });
-      setTodos([...todos, response.data.todo]);
-      setNewTodoText('');
+      const userId = localStorage.getItem('userId');
+      const response = await axios.post('http://localhost:5000/api/todos', { text: newTodo, userId });
+      setTodos([...todos, response.data]);
+      setNewTodo('');
     } catch (error) {
       console.error('Error adding todo:', error);
     }
@@ -44,32 +42,51 @@ const TodoList = () => {
     }
   };
 
+  const updateTodo = async () => {
+    try {
+      const response = await axios.put(`http://localhost:5000/api/todos/${editingTodoId}`, { text: editingText });
+      setTodos(todos.map(todo => todo._id === editingTodoId ? response.data : todo));
+      setEditingTodoId(null);
+      setEditingText('');
+    } catch (error) {
+      console.error('Error updating todo:', error);
+    }
+  };
+
   return (
-   <div>
-      <h1>Todo List</h1>
-      <div className="form-container">
-        <form onSubmit={addTodo}>
-          <div className="form-field">
-            <input
-              type="text"
-              placeholder="Add a new todo"
-              value={newTodoText}
-              onChange={(e) => setNewTodoText(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-field">
-            <button type="submit">Add Todo</button>
-          </div>
-        </form>
-        <ul>
-          {todos.map(todo => (
-            <li key={todo._id}>
-              {todo.text} <button onClick={() => deleteTodo(todo._id)}>Delete</button>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <div>
+      <h2>Todo List</h2>
+      <input
+        type="text"
+        placeholder="New Todo"
+        value={newTodo}
+        onChange={(e) => setNewTodo(e.target.value)}
+      />
+      <button onClick={addTodo}>Add Todo</button>
+      <ul>
+        {todos.map(todo => (
+          <li key={todo._id}>
+            {editingTodoId === todo._id ? (
+              <input
+                type="text"
+                value={editingText}
+                onChange={(e) => setEditingText(e.target.value)}
+              />
+            ) : (
+              <span>{todo.text}</span>
+            )}
+            <button onClick={() => deleteTodo(todo._id)}>Delete</button>
+            {editingTodoId === todo._id ? (
+              <button onClick={updateTodo}>Save</button>
+            ) : (
+              <button onClick={() => {
+                setEditingTodoId(todo._id);
+                setEditingText(todo.text);
+              }}>Edit</button>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
