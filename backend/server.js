@@ -45,19 +45,15 @@ app.post('/api/auth/signup', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   try {
-    // Find user by username
     const user = await User.findOne({ username });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-
-    // Validate password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
-
-    res.status(200).json({ message: 'Login successful', user });
+    res.status(200).json({ message: 'Login successful', userId: user._id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server Error' });
@@ -66,12 +62,12 @@ app.post('/api/auth/login', async (req, res) => {
 
 // Get all todos for a specific user
 app.get('/api/todos', async (req, res) => {
-  const { userId } = req.query; // Get userId from query parameters
+  const { userId } = req.query;
   try {
     const todos = await Todo.find({ user: userId });
     res.json(todos);
   } catch (error) {
-    console.error('Error fetching todos:', error);
+    console.error(error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
@@ -80,7 +76,6 @@ app.get('/api/todos', async (req, res) => {
 app.post('/api/todos', async (req, res) => {
   const { text, userId } = req.body; // Assuming userId is sent from frontend
   try {
-    
     const newTodo = new Todo({ text, user: userId }); // Assign userId to the user field of Todo
     await newTodo.save();
     res.status(201).json({ message: 'Todo created successfully', todo: newTodo });

@@ -1,0 +1,72 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(45deg, #1d1d1d, #434343);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 100px;
+}
+h1 {
+  font-size: 2.5rem;
+  font-style: italic;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.form-container {
+  width: 90%;
+  max-width: 400px;
+  padding: 30px;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+.form-field {
+  width: 100%;
+  margin-bottom: 20px;
+}
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+.form-field input,
+.form-field button {
+  width: 100%;
+  padding: 12px;
+  box-sizing: border-box;
+  border: 1px solid #555;
+  border-radius: 5px;
+  background: #333;
+  color: #fff;
+  font-size: 1rem;
+}
+.form-field button {
+  margin-top: 10px;
+  font-size: 1.2rem;
+}
+.form-field button[type="submit"] {
+  background-color: #007bff;
+}
+.form-field button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+.form-field button[type="button"] {
+  background-color: #6c757d;
+}
+.form-field button[type="button"]:hover {
+  background-color: #5a6268;
+}
+.message {
+  margin-top: 20px;
+  text-align: center;
+  font-weight: bold;
+}
