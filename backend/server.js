@@ -116,7 +116,7 @@ app.put('/api/todos/:id', async (req, res) => {
   }
 
   try {
-    const updatedTodo = await Todo.findByIdAndUpdate(id, { text, updatedDate: Date.now() }, { new: true });
+    const updatedTodo = await Todo.findByIdAndUpdate(id, { text }, { new: true });
 
     if (!updatedTodo) {
       return res.status(404).json({ message: 'Todo not found' });

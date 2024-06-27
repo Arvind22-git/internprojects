@@ -12,6 +12,20 @@ const SignupForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    
+    // Basic validation for email
+    if (!isValidEmail(username)) {
+      setMessage('Please enter a valid email address.');
+      return;
+    }
+
+    // Basic validation for password
+    if (!isValidPassword(password)) {
+      setMessage('Password must be at least 8 characters long.');
+      return;
+    }
+    
     try {
       const response = await axios.post('http://localhost:5000/api/auth/signup', {
         username,
@@ -23,6 +37,18 @@ const SignupForm = () => {
     } catch (error) {
       console.error('Signup error:', error);
     }
+  };
+  
+  
+  // Regular expression for basic email validation
+  const isValidEmail = (email) => {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
+
+  // Basic password validation (at least 8 characters)
+  const isValidPassword = (password) => {
+    return password.length >= 8;
   };
 
   return (

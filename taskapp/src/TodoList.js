@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Form.css';
+import './TodoList.css';
+import Navbar from './Navbar';
 
 const TodoList = () => {
   const [todos, setTodos] = useState([]);
   const [newTodo, setNewTodo] = useState('');
   const [editingTodoId, setEditingTodoId] = useState(null);
   const [editingText, setEditingText] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('userId'));
 
   useEffect(() => {
     fetchTodos();
@@ -52,20 +55,29 @@ const TodoList = () => {
       console.error('Error updating todo:', error);
     }
   };
+  
+   const handleLogout = () => {
+    localStorage.removeItem('userId');
+    setIsLoggedIn(false);
+  };
 
   return (
-    <div>
+     <div>
+      {isLoggedIn && <Navbar onLogout={handleLogout} />}
+    <div className="todo-container">
       <h2>Todo List</h2>
-      <input
-        type="text"
-        placeholder="New Todo"
-        value={newTodo}
-        onChange={(e) => setNewTodo(e.target.value)}
-      />
-      <button onClick={addTodo}>Add Todo</button>
+      <div className="input-group">
+        <input
+          type="text"
+          placeholder="New Todo"
+          value={newTodo}
+          onChange={(e) => setNewTodo(e.target.value)}
+        />
+        <button onClick={addTodo}>Add Todo</button>
+      </div>
       <ul>
         {todos.map(todo => (
-          <li key={todo._id}>
+          <li key={todo._id} className="todo-item">
             {editingTodoId === todo._id ? (
               <input
                 type="text"
@@ -75,19 +87,22 @@ const TodoList = () => {
             ) : (
               <span>{todo.text}</span>
             )}
-            <button onClick={() => deleteTodo(todo._id)}>Delete</button>
-            {editingTodoId === todo._id ? (
-              <button onClick={updateTodo}>Save</button>
-            ) : (
-              <button onClick={() => {
+            <div className="button-group">
+              <button className="edit-button" onClick={() => {
                 setEditingTodoId(todo._id);
                 setEditingText(todo.text);
               }}>Edit</button>
-            )}
+              {editingTodoId === todo._id ? (
+                <button className="save-button" onClick={updateTodo}>Save</button>
+              ) : (
+                <button className="delete-button" onClick={() => deleteTodo(todo._id)}>Delete</button>
+              )}
+            </div>
           </li>
         ))}
       </ul>
     </div>
+   </div>
   );
 };
 

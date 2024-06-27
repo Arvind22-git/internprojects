@@ -11,6 +11,24 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    
+    // Basic validation
+    if (!username) {
+      setMessage('Please enter your email.');
+      return;
+    }
+
+    if (!isValidEmail(username)) {
+      setMessage('Please enter a valid email address.');
+      return;
+    }
+
+    if (!password) {
+      setMessage('Please enter your password.');
+      return;
+    }
+
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         username,
@@ -25,6 +43,13 @@ const LoginForm = () => {
   };
 
   const isNewUser = true;
+
+   // Regular expression for basic email validation
+  const isValidEmail = (email) => {
+    // Basic pattern for email validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailPattern.test(email);
+  };
 
   return (
     <div>
